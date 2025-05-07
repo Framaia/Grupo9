@@ -11,4 +11,12 @@ public class MainGame extends Game {
     public void startGame() {
         setScreen(new GameplayScreen(this));
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (getScreen() != null) {
+            getScreen().dispose();
+        }
+    }
 }
