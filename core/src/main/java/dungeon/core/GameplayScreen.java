@@ -14,6 +14,9 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.audio.Music;
+
 
 public class GameplayScreen extends ScreenAdapter {
 
@@ -55,6 +58,12 @@ public class GameplayScreen extends ScreenAdapter {
     private final int MAX_HEALTH = 100;
     private int keys = 0;
     private int gold = 0;
+
+    // Sons do jogo
+    private Sound attackSound;
+    private Sound hitSound;
+    private Music victoryMusic;
+
 
     // Inimigos
     private List<Enemy> enemies = new ArrayList<>();
@@ -243,6 +252,11 @@ public class GameplayScreen extends ScreenAdapter {
         // Configuração inicial do jogador
         playerX = (Gdx.graphics.getWidth() - playerWidth) / 2f;
         playerY = (Gdx.graphics.getHeight() - playerHeight) / 2f;
+        // Carregar sons
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("sword_slash.wav"));
+        hitSound = Gdx.audio.newSound(Gdx.files.internal("damage_sound.wav"));
+        victoryMusic = Gdx.audio.newMusic(Gdx.files.internal("victory_sound1.wav"));
+        victoryMusic.setLooping(false);
 
         // Configurar a sala inicial
         setupRoom(currentRoom);
@@ -481,6 +495,7 @@ public class GameplayScreen extends ScreenAdapter {
         // Verificar condição de vitória
         if (!gameWon && currentRoom == 3 && enemies.stream().allMatch(e -> e.isDead)) {
             gameWon = true;
+            victoryMusic.play();
             showMessage("Derrotaste o Boss! Vitória!");
         }
 
@@ -528,6 +543,7 @@ public class GameplayScreen extends ScreenAdapter {
 
                 // Causar dano
                 enemy.takeDamage(20);
+                hitSound.play();
                 hitEnemy = true;
 
                 // Contabilizar inimigo morto
@@ -538,6 +554,7 @@ public class GameplayScreen extends ScreenAdapter {
         }
 
         if (!hitEnemy) {
+            attackSound.play();
             showMessage("Atacaste, mas não acertaste em nenhum inimigo!");
         }
     }
@@ -845,9 +862,11 @@ public class GameplayScreen extends ScreenAdapter {
         if (gameOverTexture != null) gameOverTexture.dispose();
         if (pauseOverlayTexture != null) pauseOverlayTexture.dispose();
         if (attackEffectTexture != null) attackEffectTexture.dispose();
+        attackSound.dispose();
+        hitSound.dispose();
+        victoryMusic.dispose();
 
 
     }
 
 }
-
