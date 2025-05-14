@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
 /* 
-  Classe Enemy - Representa os inimigos que o jogador encontra no dungeon.
+  Classe Enemy - Representa os inimigos que o jogador encontra no jogo.
   Implementa vários tipos de inimigos com diferentes comportamentos, seguindo o padrão Entity-Component que separa posição, aparência, estatísticas e comportamento
 */
 public class Enemy {
