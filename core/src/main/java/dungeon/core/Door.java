@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 /*
- * Classe Door - Portas que ligam as salas do dungeon.
- * Permitem ao jogador navegar entre salas diferentes e podem estar trancadas.
+  Classe Door - Portas que ligam as salas do dungeon.
+  Permitem ao jogador navegar entre salas diferentes e podem estar trancadas.
  */
 public class Door {
     // Posição da porta no ecrã
