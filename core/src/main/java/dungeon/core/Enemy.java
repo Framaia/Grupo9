@@ -6,9 +6,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import java.util.Random;
 
-// Implementação da classe Enemy usando o padrão Entity-Component
+/* 
+  Classe Enemy - Representa os inimigos que o jogador encontra no dungeon.
+  Implementa vários tipos de inimigos com diferentes comportamentos, seguindo o padrão Entity-Component que separa posição, aparência, estatísticas e comportamento
+*/
 public class Enemy {
-    // Tipos de inimigos
+    // Tipos de inimigos disponíveis no jogo
     public enum EnemyType {
         ZOMBIE("enemy.png", 50, 5, 100f, 0.8f, 30),
         SKELETON("skeleton.png", 40, 8, 120f, 0.6f, 40),
@@ -32,17 +35,17 @@ public class Enemy {
         }
     }
 
-    // Componente de position
+    // Componente de posição - posicionamento do(s) inimigo(s) no ecrã
     private float x, y;
     private float width = 128f;
     private float height = 128f;
     private float moveSpeed;
-    private Rectangle hitbox;
+    private Rectangle hitbox;  // Área para detetar colisões com o jogador
 
-    // Componente de visuals
+    // Componente visual - aparência do inimigo
     private Texture texture;
 
-    // Componente de stats
+    // Componente de estatísticas - valores que definem as capacidades do inimigo
     private int health;
     private int maxHealth;
     private int attackDamage;
@@ -50,47 +53,65 @@ public class Enemy {
     private float lastAttackTime = 0f;
     private int goldValue;
 
-    // Componente de AI
+    // Componente de IA - comportamento do inimigo
     private AIType aiType;
     private Vector2 targetPosition;
     private float timeSinceLastDirectionChange = 0f;
     private float directionChangeInterval = 2f;
     private Random random;
 
-    // Tipo de IA para inimigos
+    // Tipos de IA disponíveis para os inimigos
     public enum AIType {
         BASIC_FOLLOWER,    // Segue o jogador diretamente
-        RANDOM_MOVEMENT,   // Movimento aleatório
+        RANDOM_MOVEMENT,   // Movimento aleatório pelo mapa
         PATROL_AREA        // Patrulha uma área definida
     }
 
-    // Construtor
+    /* 
+      Construtor da classe Enemy.
+      
+      Cria um inimigo com as características definidas pelo seu tipo (zombie, skeleton, boss)
+      e o comportamento definido pelo tipo de IA escolhido.
+    */
     public Enemy(float x, float y, EnemyType type, AIType aiType) {
-        this.x = x;
-        this.y = y;
-        this.texture = new Texture(type.texturePath);
-        this.health = type.health;
-        this.maxHealth = type.health;
-        this.attackDamage = type.attackDamage;
-        this.moveSpeed = type.moveSpeed;
-        this.attackCooldown = type.attackCooldown;
-        this.goldValue = type.goldValue;
-        this.aiType = aiType;
-        this.hitbox = new Rectangle(x, y, width, height);
-        this.random = new Random();
-        this.targetPosition = new Vector2(x, y);
-    }
+        		
+		// Define a posição inicial do inimigo
+		this.x = x;
+		this.y = y;
+    
+		// Copia as características do tipo de inimigo selecionado
+		this.texture = new Texture(type.texturePath);
+		this.health = type.health;
+		this.maxHealth = type.health;
+		this.attackDamage = type.attackDamage;
+		this.moveSpeed = type.moveSpeed;
+		this.attackCooldown = type.attackCooldown;
+		this.goldValue = type.goldValue;
+    
+		// Define o comportamento e inicializa componentes de colisão
+		this.aiType = aiType;
+		this.hitbox = new Rectangle(x, y, width, height);
+    
+		// Inicializa ferramentas para movimento aleatório
+		this.random = new Random();
+		this.targetPosition = new Vector2(x, y);
+		}
 
+    /* 
+      Atualiza o estado do inimigo a cada frame.
+      Controla o movimento, ataques e colisões com o jogador.
+      O parâmetro deltaTime representa o tempo desde o último frame, permitindo que o movimento seja independente da velocidade do computador.
+    */
     public void update(float deltaTime, Player player) {
         lastAttackTime += deltaTime;
 
         // Atualiza o comportamento de IA
         updateAI(deltaTime, player);
 
-        // Atualiza a hitbox
+        // Atualiza a hitbox para coincidir com a posição atual
         hitbox.set(x, y, width, height);
 
-        // Verificar colisão com o jogador
+        // Serve para verificar a colisão com o jogador e atacar se possível
         if (hitbox.overlaps(player.getHitbox())) {
             if (lastAttackTime >= attackCooldown) {
                 attackPlayer(player);
@@ -98,6 +119,13 @@ public class Enemy {
         }
     }
 
+    /* 
+      Atualiza o comportamento da IA do inimigo.
+      O comportamento varia dependendo do tipo de IA:
+      - BASIC_FOLLOWER: persegue o jogador diretamente
+      - RANDOM_MOVEMENT: move-se aleatoriamente pelo mapa
+      - PATROL_AREA: patrulha uma área específica, perseguindo o jogador se estiver próximo
+    */
     private void updateAI(float deltaTime, Player player) {
         switch (aiType) {
             case BASIC_FOLLOWER:
@@ -132,7 +160,7 @@ public class Enemy {
                 }
                 moveTowardsTarget(targetPosition, deltaTime);
 
-                // Se o jogador estiver próximo, mudar para perseguição
+                // Se o jogador estiver próximo, muda para perseguição
                 float distanceToPlayer = Vector2.dst(x, y, player.getX(), player.getY());
                 if (distanceToPlayer < 200) {
                     moveTowardsPlayer(player, deltaTime);
@@ -141,19 +169,23 @@ public class Enemy {
         }
     }
 
+    /* 
+      Move o inimigo em direção ao jogador.
+      Calcula a direção para o jogador e desloca o inimigo nessa direção, considerando a sua velocidade de movimento.
+    */
     private void moveTowardsPlayer(Player player, float deltaTime) {
-        // Calcular direção para o jogador
+        // Calcula a direção para o jogador
         float directionX = player.getX() - x;
         float directionY = player.getY() - y;
         float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
 
-        // Normalizar a direção
+        // Normaliza a direção
         if (length > 0) {
             directionX /= length;
             directionY /= length;
         }
 
-        // Mover em direção ao jogador
+        // Move em direção ao jogador
         x += directionX * moveSpeed * deltaTime;
         y += directionY * moveSpeed * deltaTime;
 
@@ -162,22 +194,26 @@ public class Enemy {
         y = Math.max(0, Math.min(y, 600 - height));
     }
 
+    /* 
+      Move o inimigo em direção a um ponto específico.
+      Usado principalmente pelos tipos de IA RANDOM_MOVEMENT e PATROL_AREA.
+    */
     private void moveTowardsTarget(Vector2 target, float deltaTime) {
         // Calcular direção para o alvo
         float directionX = target.x - x;
         float directionY = target.y - y;
         float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
 
-        // Se estiver muito próximo do alvo, considerar como chegado
+        // Interrompe o movimento quando está suficientemente perto do destino
         if (length < 5) {
             return;
         }
 
-        // Normalizar a direção
+        // Normaliza a direção
         directionX /= length;
         directionY /= length;
 
-        // Mover em direção ao alvo
+        // Deslocamento no sentido do alvo
         x += directionX * moveSpeed * deltaTime;
         y += directionY * moveSpeed * deltaTime;
 
@@ -186,20 +222,36 @@ public class Enemy {
         y = Math.max(0, Math.min(y, 600 - height));
     }
 
+    /* 
+      Ataca o jogador, causando dano baseado no attackDamage do inimigo.
+      Reinicia o temporizador de ataque para controlar a frequência.
+    */
     private void attackPlayer(Player player) {
         player.takeDamage(attackDamage);
         lastAttackTime = 0;
     }
 
+    /* 
+      Reduz a vida do inimigo quando ele sofre dano.
+      Se a vida chegar a zero, o inimigo é considerado morto.
+    */
     public void takeDamage(int damage) {
         health -= damage;
         if (health < 0) health = 0;
     }
 
+    /* 
+      Apresentação visual do inimigo no ecrã.
+	  Utiliza a textura associada ao tipo de inimigo.
+    */
     public void render(SpriteBatch batch) {
         batch.draw(texture, x, y, width, height);
     }
 
+    /* 
+      Visualização da barra de vida do inimigo.
+      Barra colorida posicionada acima do inimigo que diminui com os danos sofridos.
+    */
     public void drawHealthBar(SpriteBatch batch, Texture barTexture) {
         float healthBarWidth = width;
         float healthBarHeight = 10f;
@@ -213,46 +265,80 @@ public class Enemy {
         batch.setColor(1, 0, 0, 1);
         batch.draw(barTexture, x, y + height + 5, healthBarWidth * healthPercentage, healthBarHeight);
 
-        // Resetar cor
+        // Configuração da cor para o valor padrão
         batch.setColor(1, 1, 1, 1);
     }
 
+    /* 
+      Devolve a coordenada X do inimigo.
+    */
     public float getX() {
         return x;
     }
 
+    /* 
+      Devolve a coordenada Y do inimigo.
+    */
     public float getY() {
         return y;
     }
 
+    /* 
+      Devolve a largura do inimigo.
+      Usada para cálculos de posicionamento e colisão.
+    */
     public float getWidth() {
         return width;
     }
 
+    /* 
+      Devolve a altura do inimigo.
+      Usada para cálculos de posicionamento e colisão.
+    */
     public float getHeight() {
         return height;
     }
 
+    /* 
+      Devolve a vida atual do inimigo.
+    */
     public int getHealth() {
         return health;
     }
 
+    /* 
+      Devolve a vida máxima do inimigo.
+      Útil para calcular a percentagem de vida para a barra de saúde.
+    */
     public int getMaxHealth() {
         return maxHealth;
     }
 
+    /* 
+      Verifica se o inimigo está morto (vida = 0).
+    */
     public boolean isDead() {
         return health <= 0;
     }
 
+    /* 
+      Devolve o valor em ouro que o jogador ganha ao derrotar este inimigo.
+    */
     public int getGoldValue() {
         return goldValue;
     }
 
+    /* 
+      Devolve a hitbox do inimigo para verificação de colisões.
+    */
     public Rectangle getHitbox() {
         return hitbox;
     }
 
+    /* 
+      Gestão dos recursos gráficos usados pelo inimigo.
+      Importante chamar quando o inimigo não é mais necessário, para evitar memory leaks.
+    */
     public void dispose() {
         texture.dispose();
     }
