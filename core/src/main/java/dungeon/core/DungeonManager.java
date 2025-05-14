@@ -128,7 +128,8 @@ public class DungeonManager {
     /*
       Atualiza o estado do dungeon a cada frame.
 	  Processa as ações do jogador e dos inimigos e também verifica transições entre s salas.
-	  O parâmetro "deltaTime" representa o tempo decorrido desde o último frame, permitindo movimentos consistentes independentemente da velocidade do computador.
+	  O parâmetro "deltaTime" representa o tempo decorrido desde o último frame, permitindo movimentos consistentes 
+      independentemente da velocidade do computador.
       */
     public void update(float deltaTime) {
         // Atualiza a posição e o estado do jogador
