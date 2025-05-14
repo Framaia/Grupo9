@@ -6,41 +6,50 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * Gerencia o dungeon inteiro, incluindo todas as salas e a navegação entre elas.
- * Implementa o padrão Singleton para acesso global.
- */
+/*
+  Classe DungeonManager - Gere todo o dungeon e coordena a navegação entre salas.
+  Esta classe usa o padrão Singleton para garantir que só existe uma instância em todo o jogo,
+  permitindo acesso global quando necessário.
+*/
 public class DungeonManager {
-    // Singleton
+    // Instância única (padrão Singleton)
     private static DungeonManager instance;
 
-    // Salas do dungeon
+    // Coleção de salas que compõem o dungeon
     private Map<Integer, Room> rooms;
-    private int currentRoomId;
+    private int currentRoomId;  // ID da sala atual onde o jogador se encontra
 
-    // Jogador
+    // Personagem principal controlado pelo jogador
     private Player player;
 
-    // Geração aleatória
+    // Gerador de números aleatórios para eventos baseados em probabilidade
     private Random random;
 
-    // Constantes
+    // Tamanho do ecrã para posicionamento dos elementos
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 600;
 
-    // Privado para Singleton
+    /*
+      Construtor privado (parte do padrão Singleton).
+      Inicializa o dungeon e o jogador e gera o labirinto de salas.
+      É privado para que não se possam criar múltiplas instâncias.
+     */
     private DungeonManager() {
         rooms = new HashMap<>();
         random = new Random();
 
-        // Inicializa o jogador
+        // Cria o jogador no centro do ecrã
         player = new Player((SCREEN_WIDTH - 128) / 2, (SCREEN_HEIGHT - 128) / 2);
 
-        // Cria o dungeon
+        // Constrói a estrutura do dungeon
         generateDungeon();
     }
 
-    // Obtém a instância Singleton
+    /*
+      Obtém a instância única do DungeonManager.
+      Se ainda não existir, cria uma nova instância.
+      É parte essencial do padrão Singleton.
+     */
     public static DungeonManager getInstance() {
         if (instance == null) {
             instance = new DungeonManager();
@@ -48,18 +57,19 @@ public class DungeonManager {
         return instance;
     }
 
-    /**
-     * Gera um dungeon básico com 4 salas conectadas.
-     * Pode ser expandido para usar algoritmos mais complexos como BSP.
+    /*
+      Gera o dungeon completo com várias salas interligadas.
+      Configura os inimigos, os itens e as portas em cada sala.
+      Atualmente cria um layout básico com 4 salas, mas pode ser expandido para usar algoritmos mais complexos.
      */
     private void generateDungeon() {
         // Sala inicial (sala 0)
         Room startRoom = new Room(0, "background.jpg", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        // Adiciona alguns inimigos à sala inicial
+        // Adiciona inimigos à sala inicial
         startRoom.addEnemy(new Enemy(500, 300, Enemy.EnemyType.ZOMBIE, Enemy.AIType.BASIC_FOLLOWER));
 
-        // Adiciona alguns itens à sala inicial
+        // Adiciona itens à sala inicial
         startRoom.addItem(new Item(200, 200, Item.ItemType.HEALTH_POTION));
         startRoom.addItem(new Item(600, 400, Item.ItemType.KEY));
 
@@ -80,7 +90,7 @@ public class DungeonManager {
         secretRoom.addItem(new Item(500, 200, Item.ItemType.HEALTH_POTION));
         secretRoom.addItem(new Item(400, 300, Item.ItemType.GOLD_COIN));
 
-        // Configurar portas
+        // Configura as ligações entre as salas através das portas
         // Sala 0 -> Sala 1 (Norte)
         Door doorNorth = new Door(SCREEN_WIDTH / 2, SCREEN_HEIGHT, Room.DoorPosition.NORTH, 1, false);
         startRoom.setDoor(Room.DoorPosition.NORTH, doorNorth);
@@ -97,40 +107,47 @@ public class DungeonManager {
         Door doorWest = new Door(0, SCREEN_HEIGHT / 2, Room.DoorPosition.WEST, 0, false);
         eastRoom.setDoor(Room.DoorPosition.WEST, doorWest);
 
-        // Sala 2 -> Sala 3 (Leste, trancada)
-        Door secretDoor = new Door(SCREEN_WIDTH, SCREEN_HEIGHT / 2, Room.DoorPosition.EAST, 3, true); // Porta trancada
+        // Sala 2 -> Sala 3 (Leste, porta trancada que requer chave)
+        Door secretDoor = new Door(SCREEN_WIDTH, SCREEN_HEIGHT / 2, Room.DoorPosition.EAST, 3, true);
         eastRoom.setDoor(Room.DoorPosition.EAST, secretDoor);
 
-        // Sala 3 -> Sala 2 (Oeste)
+        // Sala 3 -> Sala 2 (Oeste, retorno da sala secreta)
         Door returnDoor = new Door(0, SCREEN_HEIGHT / 2, Room.DoorPosition.WEST, 2, false);
         secretRoom.setDoor(Room.DoorPosition.WEST, returnDoor);
 
-        // Adicionar todas as salas ao mapa
+        // Adiciona todas as salas ao mapa do dungeon
         rooms.put(0, startRoom);
         rooms.put(1, northRoom);
         rooms.put(2, eastRoom);
         rooms.put(3, secretRoom);
 
-        // Definir a sala inicial
+        // Define a sala inicial para o jogador começar
         currentRoomId = 0;
     }
 
-    // Atualiza o estado do dungeon
+    /*
+      Atualiza o estado do dungeon a cada frame.
+	  Processa as ações do jogador e dos inimigos e também verifica transições entre s salas.
+	  O parâmetro "deltaTime" representa o tempo decorrido desde o último frame, permitindo movimentos consistentes independentemente da velocidade do computador.
+      */
     public void update(float deltaTime) {
-        // Atualiza o jogador
+        // Atualiza a posição e o estado do jogador
         player.update(deltaTime);
 
-        // Atualiza a sala atual
+        // Atualiza a sala atual e tudo o que está dentro dela
         Room currentRoom = rooms.get(currentRoomId);
         currentRoom.update(deltaTime, player);
 
-        // Verifica transição de sala
+        // Verifica se o jogador está a tentar mudar de sala
         if (player.isInRoomTransition()) {
             handleRoomTransition();
         }
     }
 
-    // Renderiza o dungeon
+    /*
+      Desenha todos os elementos do dungeon no ecrã.
+	  Renderiza a sala atual e o jogador usando o SpriteBatch fornecido.
+	  */
     public void render(SpriteBatch batch) {
         // Renderiza a sala atual
         rooms.get(currentRoomId).render(batch);
@@ -139,7 +156,10 @@ public class DungeonManager {
         player.render(batch);
     }
 
-    // Lida com a transição entre salas
+    /*
+      Processa a transição do jogador entre salas diferentes.
+      Quando o jogador usa uma porta, este método é chamado para mudar para a nova sala e reposicionar o jogador adequadamente.
+     */
     private void handleRoomTransition() {
         Room.DoorPosition exitDirection = player.getExitDirection();
         Room currentRoom = rooms.get(currentRoomId);
@@ -150,11 +170,11 @@ public class DungeonManager {
             Room nextRoom = rooms.get(nextRoomId);
 
             if (nextRoom != null) {
-                // Posição da entrada na nova sala
+                // Determina a posição de entrada na nova sala
                 Room.DoorPosition entryDirection = exitDirection.getOpposite();
                 Door entryDoor = nextRoom.getDoor(entryDirection);
 
-                // Reposicionar o jogador próximo à porta de entrada
+                // Reposiciona o jogador junto à porta de entrada
                 float newX = 0;
                 float newY = 0;
 
@@ -179,17 +199,20 @@ public class DungeonManager {
 
                 player.setPosition(newX, newY);
 
-                // Atualizar a sala atual
+                // Atualiza o ID da sala atual
                 currentRoomId = nextRoomId;
                 System.out.println("Mudando para a sala " + currentRoomId);
             }
         }
 
-        // Resetar a flag de transição
+        // Limpa a flag de transição no jogador
         player.resetRoomTransition();
     }
 
-    // Libera recursos
+    /*
+      Liberta todos os recursos usados pelo dungeon.
+      Deve ser chamado quando o jogo termina para evitar memory leaks.
+     */
     public void dispose() {
         for (Room room : rooms.values()) {
             room.dispose();
@@ -197,15 +220,26 @@ public class DungeonManager {
         player.dispose();
     }
 
-    // Getters
+    /*
+      Devolve a instância do personagem controlado pelo jogador.
+	  Útil para outras classes que precisem interagir com o jogador.
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /*
+      Devolve a sala atual que o jogador está a explorar.
+	  Permite acesso aos conteúdos e características da sala.
+     */
     public Room getCurrentRoom() {
         return rooms.get(currentRoomId);
     }
 
+    /*
+     * Devolve o número identificador (ID) da sala atual.
+	   Serve para identificar qual das salas do dungeon está ativa neste momento.
+     */
     public int getCurrentRoomId() {
         return currentRoomId;
     }

@@ -4,22 +4,33 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
+/*
+ * Classe Door - Portas que ligam as salas do dungeon.
+ * Permitem ao jogador navegar entre salas diferentes e podem estar trancadas.
+ */
 public class Door {
-    // Posicionamento
+    // Posição da porta no ecrã
     private float x, y;
     private float width = 64f;
     private float height = 128f;
-    private Rectangle hitbox;
+    private Rectangle hitbox;  // Área para detetar colisões com o jogador
 
-    // Visual
+    // Texturas da porta (normal e trancada)
     private Texture texture;
     private Texture lockedTexture;
 
-    // Propriedades
-    private Room.DoorPosition position;
-    private int targetRoomId; // ID da sala que esta porta leva
-    private boolean isLocked;
+    // Características da porta
+    private Room.DoorPosition position;  // Norte, Sul, Este, Oeste
+    private int targetRoomId;            // Sala aonde a porta dá acesso
+    private boolean isLocked;            // Indica se a porta está trancada ou não
 
+    /*
+      Construtor da classe Door - Apresenta uma porta com todos os atributos necessários, carrega as texturas
+      apropriadas baseadas na posição e ajusta o posicionamento e dimensões da porta de acordo com a sua orientação
+      (portas norte/sul ou este/oeste).
+      Recebe como parâmetros as coordenadas iniciais (x,y), a posição/orientação da porta, o ID da sala de destino
+      e uma flag que valida se a porta está inicialmente trancada ou não.
+     */
     public Door(float x, float y, Room.DoorPosition position, int targetRoomId, boolean isLocked) {
         this.x = x;
         this.y = y;
@@ -27,7 +38,7 @@ public class Door {
         this.targetRoomId = targetRoomId;
         this.isLocked = isLocked;
 
-        // Configurar textura com base na posição
+        // Escolhe a textura com base na direção da porta
         String texturePath = "door_";
         switch (position) {
             case NORTH:
@@ -44,21 +55,27 @@ public class Door {
                 break;
         }
 
+        // Carrega as texturas
         this.texture = new Texture(texturePath);
         this.lockedTexture = new Texture("door_locked.png");
 
-        // Ajustar posicionamento com base na posição da porta
+        // Ajusta a posição para que a porta fique bem alinhada com a parede
         switch (position) {
             case NORTH:
+                // Porta em cima
                 this.x = x - width / 2;
                 this.y = y - height / 10;
                 break;
             case SOUTH:
+                // Porta em baixo
                 this.x = x - width / 2;
                 this.y = y - height;
                 break;
             case EAST:
-                // Rotação de 90 graus, então largura e altura são trocadas
+                /*
+                Porta à direita - O valor das variáveis largura e altura é trocado (relativamente Ààs anteriores)
+                uma vez que a porta está de lado
+                */
                 float temp = width;
                 width = height;
                 height = temp;
@@ -66,7 +83,7 @@ public class Door {
                 this.y = y - height / 2;
                 break;
             case WEST:
-                // Rotação de 90 graus, então largura e altura são trocadas
+                // Porta à esquerda - também trocamos largura e altura
                 temp = width;
                 width = height;
                 height = temp;
@@ -75,9 +92,14 @@ public class Door {
                 break;
         }
 
+        // Cria a hitbox para detetar colisões com a porta
         this.hitbox = new Rectangle(this.x, this.y, width, height);
     }
 
+    /*
+      Desenha a porta no ecrã.
+      Usa a textura normal ou de porta trancada dependendo do estado.
+     */
     public void render(SpriteBatch batch) {
         if (isLocked) {
             batch.draw(lockedTexture, x, y, width, height);
@@ -86,26 +108,48 @@ public class Door {
         }
     }
 
+    /*
+      Verifica se o jogador está a tocar na porta.
+      Isto permite saber quando o jogador pode interagir com a porta.
+     */
     public boolean checkCollision(Player player) {
         return hitbox.overlaps(player.getHitbox());
     }
 
+    /*
+      Desbloqueia a porta.
+      É "chamado" quando o jogador tem em sua posse uma chave.
+     */
     public void unlock() {
         isLocked = false;
     }
 
+    /*
+      Verifica se a porta está trancada.
+     */
     public boolean isLocked() {
         return isLocked;
     }
 
+    /*
+      Retorna a posição da porta (Norte, Sul, Este, Oeste).
+     */
     public Room.DoorPosition getPosition() {
         return position;
     }
 
+    /*
+      Retorna o ID da sala para onde esta porta leva.
+      Usado para saber para onde o jogador vai ao usar a porta.
+     */
     public int getTargetRoomId() {
         return targetRoomId;
     }
 
+    /*
+      Liberta as texturas carregadas.
+      Importante chamar quando já não precisamos da porta.
+     */
     public void dispose() {
         texture.dispose();
         lockedTexture.dispose();
