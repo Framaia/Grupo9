@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 /*
-  Classe Door - Portas que ligam as salas do dungeon.
+  Classe Door - Portas que ligam as salas do jogo.
   Permitem ao jogador navegar entre salas diferentes e podem estar trancadas.
  */
 public class Door {
@@ -73,7 +73,7 @@ public class Door {
                 break;
             case EAST:
                 /*
-                Porta à direita - O valor das variáveis largura e altura é trocado (relativamente Ààs anteriores)
+                Porta à direita - O valor das variáveis largura e altura é trocado (relativamente às anteriores)
                 uma vez que a porta está de lado
                 */
                 float temp = width;
@@ -132,7 +132,7 @@ public class Door {
     }
 
     /*
-      Retorna a posição da porta (Norte, Sul, Este, Oeste).
+      Devolve a posição da porta (Norte, Sul, Este, Oeste).
      */
     public Room.DoorPosition getPosition() {
         return position;
@@ -147,8 +147,8 @@ public class Door {
     }
 
     /*
-      Liberta as texturas carregadas.
-      Importante chamar quando já não precisamos da porta.
+      Gestão dos recursos gráficos usados pela porta.
+      Importante chamar quando já não precisamos da porta, para evitar memory leaks.
      */
     public void dispose() {
         texture.dispose();
