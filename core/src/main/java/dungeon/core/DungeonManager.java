@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 /*
-  Classe DungeonManager - Gere todo o dungeon e coordena a navegação entre salas.
+  Classe DungeonManager - Gere todo o jogo e coordena a navegação entre salas.
   Esta classe usa o padrão Singleton para garantir que só existe uma instância em todo o jogo,
   permitindo acesso global quando necessário.
 */
@@ -15,7 +15,7 @@ public class DungeonManager {
     // Instância única (padrão Singleton)
     private static DungeonManager instance;
 
-    // Coleção de salas que compõem o dungeon
+    // Coleção de salas que compõem o jogo
     private Map<Integer, Room> rooms;
     private int currentRoomId;  // ID da sala atual onde o jogador se encontra
 
@@ -31,7 +31,7 @@ public class DungeonManager {
 
     /*
       Construtor privado (parte do padrão Singleton).
-      Inicializa o dungeon e o jogador e gera o labirinto de salas.
+      Inicializa o jogo e o jogador e gera o labirinto de salas.
       É privado para que não se possam criar múltiplas instâncias.
      */
     private DungeonManager() {
@@ -41,7 +41,7 @@ public class DungeonManager {
         // Cria o jogador no centro do ecrã
         player = new Player((SCREEN_WIDTH - 128) / 2, (SCREEN_HEIGHT - 128) / 2);
 
-        // Constrói a estrutura do dungeon
+        // Constrói a estrutura do jogo
         generateDungeon();
     }
 
@@ -58,7 +58,7 @@ public class DungeonManager {
     }
 
     /*
-      Gera o dungeon completo com várias salas interligadas.
+      Gera o jogo completo com várias salas interligadas.
       Configura os inimigos, os itens e as portas em cada sala.
       Atualmente cria um layout básico com 4 salas, mas pode ser expandido para usar algoritmos mais complexos.
      */
@@ -115,7 +115,7 @@ public class DungeonManager {
         Door returnDoor = new Door(0, SCREEN_HEIGHT / 2, Room.DoorPosition.WEST, 2, false);
         secretRoom.setDoor(Room.DoorPosition.WEST, returnDoor);
 
-        // Adiciona todas as salas ao mapa do dungeon
+        // Adiciona todas as salas ao mapa do jogo
         rooms.put(0, startRoom);
         rooms.put(1, northRoom);
         rooms.put(2, eastRoom);
@@ -126,8 +126,8 @@ public class DungeonManager {
     }
 
     /*
-      Atualiza o estado do dungeon a cada frame.
-	  Processa as ações do jogador e dos inimigos e também verifica transições entre s salas.
+      Atualiza o estado do jogo a cada frame.
+	  Processa as ações do jogador e dos inimigos e também verifica as transições entre as salas.
 	  O parâmetro "deltaTime" representa o tempo decorrido desde o último frame, permitindo movimentos consistentes 
       independentemente da velocidade do computador.
       */
@@ -146,14 +146,14 @@ public class DungeonManager {
     }
 
     /*
-      Desenha todos os elementos do dungeon no ecrã.
-	  Renderiza a sala atual e o jogador usando o SpriteBatch fornecido.
+      Desenha todos os elementos do jogo no ecrã.
+      Exibe a sala atual e o jogador usando o SpriteBatch fornecido.
 	  */
     public void render(SpriteBatch batch) {
-        // Renderiza a sala atual
+        // Desenha a sala atual
         rooms.get(currentRoomId).render(batch);
 
-        // Renderiza o jogador
+        // Desenha o jogador
         player.render(batch);
     }
 
@@ -206,13 +206,13 @@ public class DungeonManager {
             }
         }
 
-        // Limpa a flag de transição no jogador
+        // Limpa a flag de transição do jogador
         player.resetRoomTransition();
     }
 
     /*
-      Liberta todos os recursos usados pelo dungeon.
-      Deve ser chamado quando o jogo termina para evitar memory leaks.
+      Gestão dos recursos gráficos usados pelo jogo.
+      Importante chamar quando o jogo termina para evitar memory leaks.
      */
     public void dispose() {
         for (Room room : rooms.values()) {
@@ -223,7 +223,7 @@ public class DungeonManager {
 
     /*
       Devolve a instância do personagem controlado pelo jogador.
-	  Útil para outras classes que precisem interagir com o jogador.
+	  Útil para outras classes que precisem de interagir com o jogador.
      */
     public Player getPlayer() {
         return player;
@@ -239,7 +239,7 @@ public class DungeonManager {
 
     /*
      * Devolve o número identificador (ID) da sala atual.
-	   Serve para identificar qual das salas do dungeon está ativa neste momento.
+	   Serve para identificar qual das salas  está ativa neste momento.
      */
     public int getCurrentRoomId() {
         return currentRoomId;
