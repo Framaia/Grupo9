@@ -139,8 +139,8 @@ public class Door {
     }
 
     /*
-      Retorna o ID da sala para onde esta porta leva.
-      Usado para saber para onde o jogador vai ao usar a porta.
+      Devolve o número identificador (ID) da sala de destino desta porta.
+      É usado para determinar o destino do jogador quando utiliza esta porta.
      */
     public int getTargetRoomId() {
         return targetRoomId;
