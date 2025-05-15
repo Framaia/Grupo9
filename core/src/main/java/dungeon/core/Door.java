@@ -4,10 +4,6 @@ import com.badlogic.gdx.graphics.Texture;  // Importa a classe Texture da libGDX
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;  // Importa a classe SpriteBatch para desenhar as texturas no ecrã
 import com.badlogic.gdx.math.Rectangle;  // Importa a classe Rectangle para criar hitboxes e detetar colisões
 
-/*
-  Classe Door - Portas que ligam as salas do jogo.
-  Permitem ao jogador navegar entre salas diferentes e podem estar trancadas.
- */
 public class Door {
     // Posição da porta no ecrã
     private float x, y;  // Coordenadas da porta no mundo do jogo
@@ -24,14 +20,7 @@ public class Door {
     private int targetRoomId;  // Sala onde a porta dá acesso - ID da sala de destino
     private boolean isLocked;  // Indica se a porta está trancada ou não
 
-    /*
-      Construtor da classe Door - Apresenta uma porta com todos os atributos necessários, carrega as texturas
-      apropriadas baseadas na posição e ajusta o posicionamento e dimensões da porta de acordo com a sua orientação
-      (portas norte/sul ou este/oeste).
-      Recebe como parâmetros as coordenadas iniciais (x,y), a posição/orientação da porta, o ID da sala de destino
-      e uma flag que valida se a porta está inicialmente trancada ou não.
-     */
-    public Door(float x, float y, Room.DoorPosition position, int targetRoomId, boolean isLocked) {
+    public Door(float x, float y, Room.DoorPosition position, int targetRoomId, boolean isLocked) {  // Construtor que configura a porta com as suas propriedades
         this.x = x;  // Guarda a coordenada X inicial
         this.y = y;  // Guarda a coordenada Y inicial
         this.position = position;  // Define a posição/orientação da porta
@@ -96,11 +85,7 @@ public class Door {
         this.hitbox = new Rectangle(this.x, this.y, width, height);  // Define a área de colisão da porta
     }
 
-    /*
-      Desenha a porta no ecrã.
-      Usa a textura normal ou de porta trancada dependendo do estado.
-     */
-    public void render(SpriteBatch batch) {  // Método chamado para desenhar a porta
+    public void render(SpriteBatch batch) {  // Método chamado para desenhar a porta no ecrã
         if (isLocked) {  // Se a porta estiver trancada
             batch.draw(lockedTexture, x, y, width, height);  // Desenha a textura de porta trancada
         } else {  // Se a porta estiver desbloqueada
@@ -108,49 +93,27 @@ public class Door {
         }
     }
 
-    /*
-      Verifica se o jogador está a tocar na porta.
-      Isto permite saber quando o jogador pode interagir com a porta.
-     */
-    public boolean checkCollision(Player player) {  // Verifica se o jogador está a colidir com a porta
+    public boolean checkCollision(Player player) {  // Método que verifica se o jogador está a tocar na porta
         return hitbox.overlaps(player.getHitbox());  // Compara a hitbox da porta com a hitbox do jogador
     }
 
-    /*
-      Desbloqueia a porta.
-      É chamado quando o jogador tem uma chave.
-     */
-    public void unlock() {  // Método para desbloquear a porta
+    public void unlock() {  // Método para desbloquear a porta quando o jogador usa uma chave
         isLocked = false;  // Define o estado da porta como desbloqueada
     }
 
-    /*
-      Verifica se a porta está trancada.
-     */
-    public boolean isLocked() {  // Método que devolve o estado atual da porta
+    public boolean isLocked() {  // Método que verifica se a porta está trancada
         return isLocked;  // Devolve verdadeiro se a porta estiver trancada, falso caso contrário
     }
 
-    /*
-      Devolve a posição da porta (Norte, Sul, Este, Oeste).
-     */
-    public Room.DoorPosition getPosition() {  // Método para obter a orientação da porta
+    public Room.DoorPosition getPosition() {  // Método que devolve a posição/orientação da porta
         return position;  // Devolve a orientação atual (NORTH, SOUTH, EAST ou WEST)
     }
 
-    /*
-      Devolve o número identificador (ID) da sala de destino desta porta.
-      É usado para determinar o destino do jogador quando utiliza esta porta.
-     */
-    public int getTargetRoomId() {  // Método para obter o ID da sala de destino
-        return targetRoomId;  // Devolve o ID da sala para onde a porta leva
+    public int getTargetRoomId() {  // Método que devolve o ID da sala para onde a porta leva
+        return targetRoomId;  // Devolve o número identificador da sala de destino
     }
 
-    /*
-      Gestão dos recursos gráficos usados pela porta.
-      Importante chamar quando já não precisamos da porta, para evitar memory leaks.
-     */
-    public void dispose() {  // Método para libertar os recursos utilizados
+    public void dispose() {  // Método para libertar os recursos gráficos usados pela porta
         texture.dispose();  // Liberta a memória usada pela textura normal
         lockedTexture.dispose();  // Liberta a memória usada pela textura de porta trancada
     }
