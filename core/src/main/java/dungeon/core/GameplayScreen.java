@@ -154,13 +154,13 @@ public class GameplayScreen extends ScreenAdapter {
 
             if (chance < 0.4f) { // 40% poção
                 items.add(new Item(x + width/2, y + height/2, "health_potion", itemTextures[0], 20));
-                showMessage("Aviso: O inimigo deixou cair uma poção!");
+                showMessage("O inimigo deixou cair uma poção!");
             } else if (chance < 0.7f) { // 30% moeda
                 items.add(new Item(x + width/2, y + height/2, "gold_coin", itemTextures[2], 10));
-                showMessage("Aviso: O inimigo deixou cair moedas de ouro!");
+                showMessage("O inimigo deixou cair moedas de ouro!");
             } else if (chance < 0.8f) { // 10% chave
                 items.add(new Item(x + width/2, y + height/2, "key", itemTextures[1], 1));
-                showMessage("Aviso: O inimigo deixou cair uma chave! Apanhe-a!!");
+                showMessage("O inimigo deixou cair uma chave! Apanha-a!!");
             }
         }
     }
@@ -390,8 +390,6 @@ public class GameplayScreen extends ScreenAdapter {
                 break;
         }
 
-        // Mensagem de nova sala
-        showMessage("Sala " + (roomId + 1));
     }
 
     @Override
@@ -572,17 +570,17 @@ public class GameplayScreen extends ScreenAdapter {
         switch (item.type) {
             case "health_potion":
                 playerHealth = Math.min(playerHealth + item.value, MAX_HEALTH);
-                showMessage("Poção coletada! +" + item.value + " de vida");
+                showMessage("Recuperaste " + item.value + " pontos de vida");
                 break;
 
             case "key":
                 keys += item.value;
-                showMessage("Chave coletada! Total: " + keys);
+                    showMessage("Encontraste uma chave! Total: " + keys);
                 break;
 
             case "gold_coin":
                 gold += item.value;
-                showMessage("Moedas coletadas! +" + item.value + " ouro");
+                showMessage("Conseguiste " + item.value + " moedas de ouro");
                 break;
         }
     }
@@ -870,3 +868,4 @@ public class GameplayScreen extends ScreenAdapter {
     }
 
 }
+
