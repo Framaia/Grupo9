@@ -23,7 +23,7 @@ public class InstructionScreen implements Screen { // Define a classe Instructio
 
     @Override
     public void show() { // Método de chamamento automatico quando este ecrã é apresentado pela primeira vez
-        instructionImage = new Texture(Gdx.files.internal("instrucoes.jpg")); // Carrega a imagem das instruções (certificação de que o ficheiro existe na pasta correta)
+        instructionImage = new Texture(Gdx.files.internal("firstscreen.png")); // Carrega a imagem das instruções (certificação de que o ficheiro existe na pasta correta)
         batch = new SpriteBatch(); // Cria um novo SpriteBatch para desenhar imagens
         font = new BitmapFont(); // Cria uma nova fonte bitmap (por defeito)
         font.getData().setScale(2f);  // Aumenta o tamanho da fonte para que o texto seja mais visível
@@ -41,10 +41,10 @@ public class InstructionScreen implements Screen { // Define a classe Instructio
         batch.draw(instructionImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Desenha a imagem das instruções que ocupa todo o ecrã
 
         // Prepara e desenha o texto no centro
-        String message = "Press ENTER to start the game"; // Define a mensagem a mostrar no ecrã
+        String message = "Pressione ENTER para começar o jogo "; // Define a mensagem a mostrar no ecrã
         layout.setText(font, message); // Mede o tamanho da mensagem com a fonte atual
         float x = (Gdx.graphics.getWidth() - layout.width) / 2; // Calcula a posição X para centrar o texto horizontalmente
-        float y = (Gdx.graphics.getHeight() - layout.height) / 2; // Calcula a posição Y para centrar o texto verticalmente
+        float y = (Gdx.graphics.getHeight() - layout.height) / 2 - 170; // Calcula a posição Y para centrar o texto verticalmente
         font.draw(batch, layout, x, y); // Desenha o texto no ecrã, centrado
 
         batch.end(); // Termina o processo de desenho
