@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;  // Importa a classe Texture da libGDX
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;  // Importa a classe SpriteBatch para desenhar as texturas no ecrã
 import com.badlogic.gdx.math.Rectangle;  // Importa a classe Rectangle para criar hitboxes e detetar colisões
 
-public class Door {
+public class Door implements GameEntity {
     // Posição da porta no ecrã
     private float x, y;  // Coordenadas da porta no mundo do jogo
     private float width = 64f;  // Largura padrão da porta em pixels
@@ -116,5 +116,18 @@ public class Door {
     public void dispose() {  // Método para libertar os recursos gráficos usados pela porta
         texture.dispose();  // Liberta a memória usada pela textura normal
         lockedTexture.dispose();  // Liberta a memória usada pela textura de porta trancada
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        // As portas são entidades estáticas que não requerem atualização de estado
+    }
+
+    public float getX() {  // Método que devolve a coordenada X da porta
+        return x;  // Devolve a posição horizontal atual
+    }
+
+    public float getY() {  // Método que devolve a coordenada Y da porta
+        return y;  // Devolve a posição vertical atual
     }
 }

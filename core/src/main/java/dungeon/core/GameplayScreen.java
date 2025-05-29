@@ -85,9 +85,9 @@ public class GameplayScreen extends ScreenAdapter {  // Define a classe Gameplay
        private List<Door> doors = new ArrayList<>();  // Portas conectando as salas
 
     // Efeitos visuais
-       private boolean showAttackEffect = false;  // Indica se o efeito de ataque deve ser mostrado
+       private boolean showAttackEffect = true;  // Indica se o efeito de ataque deve ser mostrado
     private float attackEffectX, attackEffectY;  // Posição do efeito de ataque
-    private float attackEffectTimer = 0;  // Temporizador para exibir o efeito por tempo limitado
+    private float attackEffectTimer = 2;  // Temporizador para exibir o efeito por tempo limitado
 
     // Utilitários
         private Random random = new Random();  // Gerador de números aleatórios
@@ -202,7 +202,7 @@ public class GameplayScreen extends ScreenAdapter {  // Define a classe Gameplay
 
                   // Animação de flutuação
         bobTimer += delta;  // Incrementa o tempo para controlar o movimento de flutuação
-        y += Math.sin(bobTimer * 5) * 0.5f;  // Altera levemente a posição vertical 
+        y += Math.sin(bobTimer * 5) * 0.5f;  // Altera levemente a posição vertical
 
 
         }
@@ -282,7 +282,7 @@ public void show() {
 private void loadTextures() {
     // Inicializa o array de texturas de fundo para as salas
     backgroundTextures = new Texture[TOTAL_ROOMS];
-    
+
     // Carrega a textura de fundo de cada sala (ou cria uma textura colorida de fallback)
     for (int i = 0; i < TOTAL_ROOMS; i++) {
         String fileName = (i == 0) ? "background.jpg" : "background" + (i+1) + ".jpg"; // Nome do ficheiro
@@ -314,6 +314,7 @@ private void loadTextures() {
     gameOverTexture = loadTextureOrCreate("game_over.jpg", 400, 300, Color.BLACK);    // Tela de game over
     pauseOverlayTexture = createColorTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(0, 0, 0, 0.7f)); // Overlay de pausa
     attackEffectTexture = loadTextureOrCreate("attack_effect.png", 64, 64, Color.YELLOW); // Efeito visual de ataque
+    
 }
 
 // Método que tenta carregar uma textura do disco, ou cria uma textura de fallback colorida
@@ -691,7 +692,7 @@ for (Enemy enemy : enemies) {
 
     // Define a cor da fonte para branco
     font.setColor(Color.WHITE);
-    
+
     // Mostra informações do jogador no canto superior esquerdo
     font.draw(batch, "Vida: " + playerHealth + "/" + MAX_HEALTH, 10, Gdx.graphics.getHeight() - 40);
     font.draw(batch, "Sala: " + (currentRoom + 1) + "/" + TOTAL_ROOMS, 10, Gdx.graphics.getHeight() - 70);
@@ -856,7 +857,7 @@ for (Enemy enemy : enemies) {
 
         // Posicionar jogador
         playerX = (Gdx.graphics.getWidth() - playerWidth) / 2f;
-        playerY = (Gdx.graphics.getHeight() - playerHeight) / 2f;  
+        playerY = (Gdx.graphics.getHeight() - playerHeight) / 2f;
 
         showMessage("Jogo reiniciado!");
     }

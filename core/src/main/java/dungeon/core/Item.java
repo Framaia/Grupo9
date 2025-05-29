@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;  // Importa a classe Texture para carr
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;  // Importa a classe SpriteBatch para desenhar os itens no ecrã
 import com.badlogic.gdx.math.Rectangle;  // Importa a classe Rectangle para criar hitboxes e detetar colisões
 
-public class Item {
+public class Item implements GameEntity {
     // Tipos de itens disponíveis no jogo
     public enum ItemType {  // Enumeração que define os diferentes tipos de itens e as suas características
         HEALTH_POTION("health_potion.png", "Poção de Vida", 20, "Restaura 20 pontos de vida"),  // Poção que recupera pontos de vida ao jogador
@@ -91,7 +91,7 @@ public class Item {
         if (isCollected) {  // Caso o item já tenha sido apanhado, não há colisão
             return false;  // Não há colisão possível com itens já apanhados
         }
-        
+
         return hitbox.overlaps(player.getHitbox());  // Resultado da verificação de sobreposição das áreas de colisão
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import dungeon.core.events.GameEventManager;  // Importa o gestor de eventos
 
 public class Room {
     // Enumeração para a posição das portas
@@ -94,6 +95,11 @@ public class Room {
                         if (player.hasKey()) {
                             doors[i].unlock();
                             player.useKey();
+
+                            // Notifica que uma porta foi desbloqueada
+                            GameEventManager eventManager = GameEventManager.getInstance();  // Obtém o gestor de eventos
+                            eventManager.notifyDoorUnlocked(doors[i], player);  // Notifica que a porta foi desbloqueada
+
                             System.out.println("Porta desbloqueada com uma chave!");
                         } else {
                             System.out.println("Esta porta está trancada. Você precisa de uma chave!");
@@ -172,35 +178,43 @@ public class Room {
             }
         }
 
+        // Notifica que a sala foi limpa
+        GameEventManager eventManager = GameEventManager.getInstance();  // Obtém o gestor de eventos
+        eventManager.notifyRoomCleared(this);  // Notifica que esta sala foi totalmente limpa
+
         System.out.println("Sala limpa! " + rewardCount + " recompensas geradas!");
     }
 
     // Processa a coleta de um item pelo jogador
-    private void collectItem(Item item, Player player) {
-        item.collect();
+    private void collectItem(Item item, Player player) {  // Processa a coleta de um item pelo jogador
+        item.collect();  // Marca o item como coletado
 
-        // Aplicar efeito do item
+        // Notifica o sistema de eventos sobre a coleta
+        GameEventManager eventManager = GameEventManager.getInstance();  // Obtém o gestor de eventos
+        eventManager.notifyItemCollected(item, player);  // Notifica que um item foi coletado
+
+        // Aplica efeito do item
         switch (item.getType()) {
             case HEALTH_POTION:
-                player.heal(item.getType().getValue());
-                System.out.println("Você coletou uma " + item.getType().getName() + "! +"
+                player.heal(item.getType().getValue());  // Cura o jogador
+                System.out.println("Coletaste uma " + item.getType().getName() + "! +"
                     + item.getType().getValue() + " de vida.");
                 break;
 
             case DAMAGE_BOOST:
-                player.increaseDamage(item.getType().getValue());
-                System.out.println("Você coletou um " + item.getType().getName() + "! +"
+                player.increaseDamage(item.getType().getValue());  // Aumenta dano do jogador
+                System.out.println("Coletaste um " + item.getType().getName() + "! +"
                     + item.getType().getValue() + " de dano.");
                 break;
 
             case KEY:
-                player.addKey();
-                System.out.println("Você coletou uma " + item.getType().getName() + "!");
+                player.addKey();  // Adiciona chave ao jogador
+                System.out.println("Coletaste uma " + item.getType().getName() + "!");
                 break;
 
             case GOLD_COIN:
-                player.addGold(item.getType().getValue());
-                System.out.println("Você coletou " + item.getType().getValue() + " moedas de ouro!");
+                player.addGold(item.getType().getValue());  // Adiciona ouro ao jogador
+                System.out.println("Coletaste " + item.getType().getValue() + " moedas de ouro!");
                 break;
         }
     }
